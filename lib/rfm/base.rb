@@ -147,44 +147,44 @@ module Rfm
       end
     end
 
-    # Mass update of record attributes, without saving.
-    def update_attributes(new_attr)
-      new_attr.each do |k,v|
-        k = k.to_s.downcase
-        if key?(k) || (layout.field_keys.include?(k.split('.')[0]) rescue nil)
-          @mods[k] = v
-          self[k] = v
-        else
-          instance_variable_set("@#{k}", v)
-        end
-      end
-    end
-    #     # Mass update of record attributes, without saving.
-    #     # TODO: return error or nil if input hash contains no recognizable keys.
-    #     def update_attributes(new_attr)
-    #       # creates new special hash
-    #       input_hash = Rfm::CaseInsensitiveHash.new
-    #       # populate new hash with input, coercing keys to strings
-    #       #new_attr.each{|k,v| input_hash.merge! k.to_s=>v}
-    #       new_attr.each{|k,v| input_hash[k.to_s] = v}
-    #       # loop thru each layout field, adding data to @mods
-    #       self.class.field_controls.keys.each do |field| 
-    #         field_name = field.to_s
-    #         if input_hash.has_key?(field_name)
-    #           #@mods.merge! field_name=>(input_hash[field_name] || '')
-    #           @mods[field_name] = (input_hash[field_name] || '')
-    #         end
-    #       end
-    #       # loop thru each input key-value,
-    #       # creating new attribute if key doesn't exist in model.
-    #       input_hash.each do |k,v| 
-    #         if !self.class.field_controls.keys.include?(k) and self.respond_to?(k)
-    #           self.instance_variable_set("@#{k}", v)
-    #         end
-    #       end
-    #       self.merge!(@mods) unless @mods == {}
-    #       #self.merge!(@mods) unless @mods == Rfm::CaseInsensitiveHash.new
-    #     end
+    # # Mass update of record attributes, without saving.
+    # def update_attributes(new_attr)
+    # 	new_attr.each do |k,v|
+    # 		k = k.to_s.downcase
+    # 		if keys.include?(k)
+    # 			@mods[k] = v
+    # 			self[k] = v
+    # 		else
+    # 			instance_variable_set("@#{k}", v)
+    # 		end
+    # 	end
+    # end
+		    # Mass update of record attributes, without saving.
+		    # TODO: return error or nil if input hash contains no recognizable keys.
+		    def update_attributes(new_attr)
+		      # creates new special hash
+		      input_hash = Rfm::CaseInsensitiveHash.new
+		      # populate new hash with input, coercing keys to strings
+		      #new_attr.each{|k,v| input_hash.merge! k.to_s=>v}
+		      new_attr.each{|k,v| input_hash[k.to_s] = v}
+		      # loop thru each layout field, adding data to @mods
+		      self.class.field_controls.keys.each do |field|
+		        field_name = field.to_s
+		        if input_hash.has_key?(field_name)
+		          #@mods.merge! field_name=>(input_hash[field_name] || '')
+		          @mods[field_name] = (input_hash[field_name] || '')
+		        end
+		      end
+		      # loop thru each input key-value,
+		      # creating new attribute if key doesn't exist in model.
+		      input_hash.each do |k,v|
+		        if !self.class.field_controls.keys.include?(k) and self.respond_to?(k)
+		          self.instance_variable_set("@#{k}", v)
+		        end
+		      end
+		      self.merge!(@mods) unless @mods == {}
+		      #self.merge!(@mods) unless @mods == Rfm::CaseInsensitiveHash.new
+		    end
 
     # Mass update of record attributes, with saving.
     def update_attributes!(new_attr)
@@ -203,7 +203,7 @@ module Rfm
       end
     rescue
       (self.errors[:base] rescue []) << $!
-      raise $!     
+      raise $!
     end
 
     # Same as save!, but will not raise error.
@@ -278,7 +278,7 @@ module Rfm
 
     def update(mod_id=nil)
       raise "Record not valid" if (defined?(ActiveModel::Validations) && !valid?)
-      return false unless record_id 
+      return false unless record_id
       run_callbacks :update do
         return unless @mods.size > 0
         unless mod_id
@@ -307,4 +307,3 @@ module Rfm
   end # Base
 
 end # Rfm
-
